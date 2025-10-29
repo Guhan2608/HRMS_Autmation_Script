@@ -1,0 +1,19 @@
+<suite name="Login">
+
+    <!-- Add your listener here -->
+    <listeners>
+        <listener class-name="Utils.TestListener"/>
+    </listeners>
+
+    <test name="LoginScenario">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="BaseTest.LoginCase">
+                <methods>
+                    <include name="testAddEmployee"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>
