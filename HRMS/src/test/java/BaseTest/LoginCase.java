@@ -2,6 +2,7 @@ package BaseTest;
 
 import Pages.Employee.AddEmployee;
 import Pages.Employee.AddEmployeeFromExcel;
+import Pages.Employee.EditEmployee;
 import Pages.Login.ForLogin;
 import Utils.PropertyReader;
 import Utils.Waits;
@@ -47,11 +48,45 @@ public class LoginCase extends Prerequest {
 
     }
 
+    @Test
+    public void verification(){
+        WebDriver driver = getDriver();
+        ForLogin lg = new ForLogin();
+        lg.logInAction("ilangosubramaniyan@abi-tech.com.sg", "ckr@17");
+        EditEmployee edit = new EditEmployee();
+        edit.fetchEmployeeData();
+        try{
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    @Test
+    public void editEmployee(){
+        WebDriver driver = getDriver();
+        ForLogin lg = new ForLogin();
+        lg.logInAction("ilangosubramaniyan@abi-tech.com.sg", "ckr@17");
+        EditEmployee edit = new EditEmployee();
+        edit.editDetails();
+        try{
+            Thread.sleep(5000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public static void main(String[] args) {
 
         PropertyReader prop = new PropertyReader("D:\\IntelJ_IDE\\Program\\HRMS\\src\\test\\sample.properties");
         String value = prop.get("emailid");
         System.out.println("value = " + value);
+            String     value12="0 1234";
+        System.out.println("value12 = " + value12);
+        System.out.println("with trim"+value12.trim());
 
     }
 }

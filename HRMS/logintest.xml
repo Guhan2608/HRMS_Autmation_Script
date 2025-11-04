@@ -10,7 +10,8 @@
         <classes>
             <class name="BaseTest.LoginCase">
                 <methods>
-                    <include name="testAddEmployee"/>
+                    <include name="editEmployee"/>
+                    <include name="verification"/>
                 </methods>
             </class>
         </classes>

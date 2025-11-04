@@ -15,7 +15,7 @@ public class Prerequest {
     @BeforeMethod
     @Parameters("browser")
     public void setUp(String browser){
-        url="http://abi-tech.us:8082/";
+        url="http://erp.jethvmarine.com:8080/";
         Reporter.log(">>> Starting browser: " + browser + " | Thread: " + Thread.currentThread().getId(), true);
         DriverManager.setDriver(browser);
         WebDriver driver = DriverManager.getDriver();

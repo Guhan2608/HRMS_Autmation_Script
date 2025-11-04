@@ -1,6 +1,7 @@
 package Pages.Common;
 
 import Browser.DriverManager;
+import Pages.Employee.EditEmployee;
 import Utils.ScreenshotUtil;
 import Utils.Waits;
 import org.openqa.selenium.*;
@@ -76,7 +77,6 @@ public class ForCommonAction {
     }
 
 
-
     public static String partialDD(By listLocator, String valueToSelect) {
         {
             List<WebElement> options = Waits.forVisibilityOfAll(listLocator);
@@ -97,6 +97,7 @@ public class ForCommonAction {
 
     /**
      * Get form the calender
+     *
      * @param month
      * @param year
      */
@@ -118,10 +119,10 @@ public class ForCommonAction {
                 )).click();
             }
         }
-        String xMonth = String.format("//span[@class='month' and text()='%s']", month.substring(0,3));
+        String xMonth = String.format("//span[@class='month' and text()='%s']", month.substring(0, 3));
         Waits.forVisibility(By.xpath(xMonth)).click();
-        Reporter.log("Selected month = " + month,true);
-        Reporter.log("Selected year = " +year ,true);
+        Reporter.log("Selected month = " + month, true);
+        Reporter.log("Selected year = " + year, true);
     }
 
     public static void forCalenderWithDay(String day, String month, String year) {
@@ -168,7 +169,7 @@ public class ForCommonAction {
         WebElement confirm = Waits.forClickability(confirmBtn);
         confirm.click();
 
-        Reporter.log("SweetAlert handled successfully with value: " + num,true);
+        Reporter.log("SweetAlert handled successfully with value: " + num, true);
     }
 
     public static void shiftDropdown(String dropdownId, String optionText) {
@@ -210,90 +211,103 @@ public class ForCommonAction {
     }
 
 
-        /**
-         * Selects a value from a Chosen.js dropdown (searchable or non-searchable)
-         *
-         * @param dropdownId the HTML 'id' of the <select> element (not the _chosen div)
-         * @param optionText the visible text of the option to select
-         */
-        public static void selectChosenDropdown(String dropdownId, String optionText) {
-            WebDriver driver = DriverManager.getDriver();
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            Actions actions = new Actions(driver);
-            JavascriptExecutor js = (JavascriptExecutor) driver;
+    /**
+     * Selects a value from a Chosen.js dropdown (searchable or non-searchable)
+     *
+     * @param dropdownId the HTML 'id' of the <select> element (not the _chosen div)
+     * @param optionText the visible text of the option to select
+     */
+    public static void selectChosenDropdown(String dropdownId, String optionText) {
+        WebDriver driver = DriverManager.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        Actions actions = new Actions(driver);
+        JavascriptExecutor js = (JavascriptExecutor) driver;
 
-            try {
-                js.executeScript("$('#" + dropdownId + "').trigger('chosen:open');");
-                // Step 1: Scroll to dropdown and open it
+        try {
+            js.executeScript("$('#" + dropdownId + "').trigger('chosen:open');");
+            // Step 1: Scroll to dropdown and open it
 //                System.out.println(driver.findElement(By.cssSelector("#" + dropdownId + "_chosen")).getAttribute("outerHTML"));
 
-                WebElement chosenTrigger;
-                try {
-                    chosenTrigger = wait.until(ExpectedConditions.elementToBeClickable(
-                            By.cssSelector("#" + dropdownId + "_chosen a.chosen-single")
-                    ));
-                } catch (Exception e) {
-                    // fallback: multi-select chosen
-                    chosenTrigger = wait.until(ExpectedConditions.elementToBeClickable(
-                            By.cssSelector("#" + dropdownId + "_chosen .chosen-choices")
-                    ));
-                }
-
-                js.executeScript("arguments[0].scrollIntoView(true);", chosenTrigger);
-                js.executeScript("arguments[0].click();", chosenTrigger);
-                Thread.sleep(300); // animation delay
-
-                // Step 2: Handle search input (if available)
-                List<WebElement> searchInputs = driver.findElements(
-                        By.cssSelector("#" + dropdownId + "_chosen .chosen-search input")
-                );
-
-                if (!searchInputs.isEmpty()) {
-                    WebElement searchInput = searchInputs.get(0);
-                    wait.until(ExpectedConditions.visibilityOf(searchInput));
-                    searchInput.clear();
-                    searchInput.sendKeys(optionText);
-                    Thread.sleep(500);
-                }
-
-                // Step 3: Wait for and select matching option
-                List<WebElement> options = wait.until(ExpectedConditions
-                        .presenceOfAllElementsLocatedBy(
-                                By.cssSelector("#" + dropdownId + "_chosen .chosen-results li")
-                        ));
-
-                boolean found = false;
-
-                for (WebElement option : options) {
-                    if (option.getText().trim().equalsIgnoreCase(optionText.trim())) {
-                        wait.until(ExpectedConditions.elementToBeClickable(option));
-                        actions.moveToElement(option).click().perform();
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                    throw new RuntimeException("Option '" + optionText + "' not found in dropdown '" + dropdownId + "'");
-
-                // Step 4: Verify selected value
-                WebElement hiddenSelect = driver.findElement(By.id(dropdownId));
-                String selectedValue = hiddenSelect.getAttribute("value");
-                System.out.println("✅ Selected: " + optionText + " (value=" + selectedValue + ")");
-
+            WebElement chosenTrigger;
+            try {
+                chosenTrigger = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("#" + dropdownId + "_chosen a.chosen-single")
+                ));
             } catch (Exception e) {
-                throw new RuntimeException(
-                        "❌ Failed to select option '" + optionText + "' from dropdown '" + dropdownId + "': "
-                                + e.getMessage(), e);
+                // fallback: multi-select chosen
+                chosenTrigger = wait.until(ExpectedConditions.elementToBeClickable(
+                        By.cssSelector("#" + dropdownId + "_chosen .chosen-choices")
+                ));
             }
-        }
 
-        public static String textBox(WebElement locator,String keys){
-            locator.sendKeys(keys, Keys.TAB);
-            return keys;
-        }
+            js.executeScript("arguments[0].scrollIntoView(true);", chosenTrigger);
+            js.executeScript("arguments[0].click();", chosenTrigger);
+            Thread.sleep(300); // animation delay
 
-    public static void selectIncrementOption( String option) {
+            // Step 2: Handle search input (if available)
+            List<WebElement> searchInputs = driver.findElements(
+                    By.cssSelector("#" + dropdownId + "_chosen .chosen-search input")
+            );
+
+            if (!searchInputs.isEmpty()) {
+                WebElement searchInput = searchInputs.get(0);
+                wait.until(ExpectedConditions.visibilityOf(searchInput));
+                searchInput.clear();
+                searchInput.sendKeys(optionText);
+                Thread.sleep(500);
+            }
+
+            // Step 3: Wait for and select matching option
+            List<WebElement> options = wait.until(ExpectedConditions
+                    .presenceOfAllElementsLocatedBy(
+                            By.cssSelector("#" + dropdownId + "_chosen .chosen-results li")
+                    ));
+
+            boolean found = false;
+
+            for (WebElement option : options) {
+                if (option.getText().trim().equalsIgnoreCase(optionText.trim())) {
+                    wait.until(ExpectedConditions.elementToBeClickable(option));
+                    actions.moveToElement(option).click().perform();
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+                throw new RuntimeException("Option '" + optionText + "' not found in dropdown '" + dropdownId + "'");
+
+            // Step 4: Verify selected value
+            WebElement hiddenSelect = driver.findElement(By.id(dropdownId));
+            String selectedValue = hiddenSelect.getAttribute("value");
+            System.out.println("✅ Selected: " + optionText + " (value=" + selectedValue + ")");
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "❌ Failed to select option '" + optionText + "' from dropdown '" + dropdownId + "': "
+                            + e.getMessage(), e);
+        }
+    }
+
+    public static void datefield(WebElement element, String value) {
+        EditEmployee.cleartextbox(element);
+        element.sendKeys(value);
+    }
+
+    public static void textBox(WebElement element, String value) {
+        try {
+            element.click();
+            element.clear(); // ✅ clears existing value
+            element.sendKeys(value);
+            System.out.println("📝 Entered text: " + value);
+        } catch (Exception e) {
+            System.out.println("⚠️ Unable to enter text: " + e.getMessage());
+            throw e;
+        }
+    }
+
+
+    public static void selectIncrementOption(String option) {
         // Trim and normalize the input (ignore case)
         WebDriver driver = DriverManager.getDriver();
         option = option.trim().toLowerCase();
@@ -312,6 +326,46 @@ public class ForCommonAction {
         radio.click();
     }
 
+
+    public static void editActiveIncrementIfPresent() {
+        WebDriver driver = DriverManager.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        try {
+            // Wait until increment details table is visible
+            WebElement table = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.id("tblIncrementDetails"))
+            );
+
+            // Locate the active row
+            List<WebElement> activeRows = table.findElements(
+                    By.xpath(".//tbody/tr[td[normalize-space(text())='Active']]")
+            );
+
+            if (activeRows.isEmpty()) {
+                System.out.println("ℹ️ No active increment found — skipping edit.");
+                return;
+            }
+
+            WebElement activeRow = activeRows.get(0);
+
+            // Find the <a> element (hyperlink) inside that row for editing
+            WebElement editLink = activeRow.findElement(By.xpath(".//a[contains(@onclick,'EditIncrementInfo')]"));
+
+            // Scroll into view and click
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", editLink);
+            Thread.sleep(500); // small pause for stability
+
+            editLink.click();
+            System.out.println("✏️ Clicked edit link for active increment.");
+
+        } catch (NoSuchElementException e) {
+            System.out.println("⚠️ No active increment or edit link found.");
+        } catch (Exception e) {
+            System.out.println("❌ Error while editing active increment: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 
     public static void selectUserAccess(String option) {
@@ -396,9 +450,9 @@ public class ForCommonAction {
     }
 
 
-    public static void selectYesNoOption( String baseId, String option) {
+    public static void selectYesNoOption(String baseId, String option) {
         WebDriver driver = DriverManager.getDriver();
-            option = option.trim().toLowerCase();
+        option = option.trim().toLowerCase();
 
         String radioId;
         if (option.equals("yes")) {
@@ -412,6 +466,42 @@ public class ForCommonAction {
         WebElement radio = new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(ExpectedConditions.elementToBeClickable(By.id(radioId)));
         radio.click();
+    }
+
+    public static String handlePopupIfPresent() {
+        try {
+            WebDriver driver = DriverManager.getDriver();
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
+            // Wait for popup (if appears)
+            WebElement popup = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                    By.cssSelector(".swal2-popup.swal2-modal.swal2-show")));
+
+            // Get popup title and message
+            String title = driver.findElement(By.id("swal2-title")).getText().trim();
+            String message = driver.findElement(By.id("swal2-html-container")).getText().trim();
+
+            String fullMessage = title + " - " + message;
+            System.out.println("⚠️ Popup Detected: " + fullMessage);
+
+            // Capture screenshot
+            String ssPath = ScreenshotUtil.takeScreenshot("Popup_" + title.replaceAll("[^a-zA-Z0-9]", "_"));
+            System.out.println("📸 Popup screenshot saved: " + ssPath);
+
+            // Click OK button to close popup
+            WebElement okButton = driver.findElement(By.cssSelector(".swal2-confirm"));
+            okButton.click();
+
+            // Return popup text to store in Excel
+            return fullMessage + " | Screenshot: " + ssPath;
+
+        } catch (TimeoutException e) {
+            // No popup found, just continue
+            return null;
+        } catch (Exception e) {
+            System.out.println("⚠️ Error while handling popup: " + e.getMessage());
+            return null;
+        }
     }
 
     public static void captureUserErrorBoxIfPresent() {
@@ -447,65 +537,55 @@ public class ForCommonAction {
 
     public static void clickSaveButton() {
         WebDriver driver = DriverManager.getDriver();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         Actions actions = new Actions(driver);
 
+        // Use a single best locator first — keep others only as backup
+        By[] locators = new By[]{
+                By.xpath("//button[contains(@onclick,'ValidateEmployeeInfo')]"),
+                By.xpath("//button[@type='button' and contains(.,'Save')]")
+        };
+
         try {
-            // Multiple locator fallbacks for reliability
-            By[] locators = new By[]{
-                    By.xpath("//button[contains(@onclick,'ValidateEmployeeInfo')]"),
-                    By.xpath("//button[@type='button' and contains(.,'Save')]"),
-                    By.cssSelector("button.S1.S3.S2"),
-                    By.xpath("//div[@class='col-lg-10']//button")
-            };
-
             WebElement saveBtn = null;
+
+            // ✅ Try to find and return the first visible button quickly
             for (By locator : locators) {
-                try {
-                    saveBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-                    if (saveBtn != null) break;
-                } catch (Exception ignored) {}
-            }
-
-            if (saveBtn == null) {
-                throw new Exception("Save button not found using any locator");
-            }
-
-            // Scroll into view
-            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", saveBtn);
-            Thread.sleep(500);
-
-            // Try normal click first
-            try {
-                wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
-                System.out.println("✅ Clicked Save button using normal click");
-            } catch (Exception e1) {
-                System.out.println("⚠️ Normal click failed → trying Actions click");
-                try {
-                    actions.moveToElement(saveBtn).pause(Duration.ofMillis(300)).click().perform();
-                    System.out.println("✅ Clicked Save button using Actions class");
-                } catch (Exception e2) {
-                    System.out.println("⚠️ Actions click failed → trying JS click");
-                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", saveBtn);
-                    System.out.println("✅ Clicked Save button using JavaScript click");
+                List<WebElement> elements = driver.findElements(locator);
+                if (!elements.isEmpty()) {
+                    saveBtn = elements.get(0);
+                    break;
                 }
             }
 
-            ScreenshotUtil.takeScreenshot("Clicked_Save_Button");
+            if (saveBtn == null)
+                throw new NoSuchElementException("Save button not found with known locators.");
 
-            // ✅ Wait for the Success popup and click OK
+            // ✅ Scroll only if not visible on screen
+            if (!saveBtn.isDisplayed()) {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", saveBtn);
+            }
+
+            // ✅ Faster click – directly attempt elementToBeClickable
+            try {
+                wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
+                System.out.println("✅ Clicked Save button normally");
+            } catch (Exception e1) {
+                // ✅ JS click fallback (skip Actions for speed)
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", saveBtn);
+                System.out.println("✅ Clicked Save button using JavaScript click");
+            }
+
+            // ✅ Wait for popup or confirmation
             waitForSuccessPopupAndClickOK();
-
             captureUserErrorBoxIfPresent();
 
         } catch (Exception e) {
-            System.out.println("❌ Unable to locate or click Save button");
+            System.out.println("❌ Failed to click Save button");
             ScreenshotUtil.takeScreenshot("Save_Button_Click_Failed");
             e.printStackTrace();
         }
     }
-
-
 
 
 }
